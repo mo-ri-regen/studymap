@@ -70,7 +70,7 @@ test("試験日から計画を作って保存できる", async ({ page }) => {
   await page.getByRole("button", { name: "この計画で始める" }).click();
   await expect(page).toHaveURL("/");
   await expect(page.getByRole("heading", { name: SAA })).toBeVisible();
-  await expect(page.getByText("試験日 2026/12/1（火）")).toBeVisible();
+  await expect(page.getByText("試験日 12/1（火）")).toBeVisible();
 });
 
 test("ペースから計画を作ると、受験おすすめ日が出て、上限を超えると注意が出る", async ({

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { addSolved, getSolved, setSolved } from "./records";
+import { MESSAGES } from "./planSchema";
+import { addSolved, getSolved, setSolved, validateSolvedText } from "./records";
 
 const records = [
   { date: "2026-10-01", solved: 10 },
@@ -59,5 +60,20 @@ describe("setSolved", () => {
 describe("getSolved", () => {
   it("記録のない日は 0", () => {
     expect(getSolved(records, "2026-10-02")).toBe(0);
+  });
+});
+
+describe("validateSolvedText", () => {
+  it("0以上の整数なら null", () => {
+    expect(validateSolvedText("0")).toBeNull();
+    expect(validateSolvedText("25")).toBeNull();
+  });
+
+  it("間違った数は理由を返す", () => {
+    expect(validateSolvedText("")).toBe(MESSAGES.number);
+    expect(validateSolvedText("abc")).toBe(MESSAGES.number);
+    expect(validateSolvedText("1.5")).toBe(MESSAGES.integer);
+    expect(validateSolvedText("-1")).toBe(MESSAGES.nonNegative);
+    expect(validateSolvedText("10001")).toBe(MESSAGES.max(10000));
   });
 });

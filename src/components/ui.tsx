@@ -1,9 +1,18 @@
 import type { ReactNode } from "react";
 
 /** スマホの幅で中央に置く。パソコンでも同じ幅にする */
-export function Screen({ children }: { children: ReactNode }) {
+export function Screen({
+  children,
+  withTabs = false,
+}: {
+  children: ReactNode;
+  /** 下のタブに隠れないよう、下に余白をとる */
+  withTabs?: boolean;
+}) {
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 py-6">
+    <main
+      className={`mx-auto flex w-full max-w-md flex-1 flex-col px-4 pt-6 ${withTabs ? "pb-24" : "pb-6"}`}
+    >
       {children}
     </main>
   );
