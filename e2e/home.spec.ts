@@ -36,3 +36,9 @@ test("保存されたデータが壊れていると知らせる", async ({ page 
     page.getByText("保存されたデータを読み込めませんでした"),
   ).toBeVisible();
 });
+
+test("計画がないときに記録画面を開くと、最初の画面に戻る", async ({ page }) => {
+  await page.goto("/record");
+  await expect(page).toHaveURL("/");
+  await expect(page.getByRole("link", { name: "計画を作る" })).toBeVisible();
+});

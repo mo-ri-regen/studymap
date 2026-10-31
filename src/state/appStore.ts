@@ -57,3 +57,11 @@ export const STORAGE_MESSAGES = {
   unavailable:
     "このブラウザでは保存できません。プライベートモードなどをやめてください",
 } as const;
+
+/** 記録だけを直して保存する（「+5」ボタンや合計の入力など） */
+export function saveRecords(
+  data: AppData,
+  update: (records: AppData["records"]) => AppData["records"],
+): SaveResult {
+  return saveAppData({ ...data, records: update(data.records) });
+}

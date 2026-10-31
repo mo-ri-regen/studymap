@@ -1,5 +1,6 @@
 import { MAX_SOLVED_PER_DAY } from "./appData";
 import type { IsoDate } from "./date";
+import { MESSAGES } from "./planSchema";
 import type { StudyRecord } from "./replan";
 
 const clamp = (value: number) =>
@@ -31,4 +32,15 @@ export function getSolved(
   date: IsoDate,
 ): number {
   return records.find((r) => r.date === date)?.solved ?? 0;
+}
+
+/** 記録画面で入れた合計を確かめる。正しければ null、間違っていれば理由 */
+export function validateSolvedText(text: string): string | null {
+  if (text.trim() === "") return MESSAGES.number;
+  const value = Number(text);
+  if (Number.isNaN(value)) return MESSAGES.number;
+  if (!Number.isInteger(value)) return MESSAGES.integer;
+  if (value < 0) return MESSAGES.nonNegative;
+  if (value > MAX_SOLVED_PER_DAY) return MESSAGES.max(MAX_SOLVED_PER_DAY);
+  return null;
 }
