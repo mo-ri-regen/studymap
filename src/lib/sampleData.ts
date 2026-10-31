@@ -22,7 +22,7 @@ export function createSampleData(today: IsoDate): AppData {
     mode: "examDate",
     examDate,
     studyWeekdays: [1, 2, 3, 4, 5, 6],
-    holidays: [addDays(today, 20)],
+    holidays: [],
     bufferDays: 7,
     dailyLimit: 50,
   };

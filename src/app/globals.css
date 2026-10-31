@@ -1,26 +1,62 @@
 @import "tailwindcss";
 
+/* 色は docs/design.md の「色と雰囲気」に合わせる */
 :root {
+  color-scheme: light dark;
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1f1f1d;
+  --muted: #6b6a66;
+  --border: #d9d8d3;
+  --surface: #f5f5f2;
+  --brand: #1d9e75;
+  --brand-strong: #0f6e56;
+  --brand-soft: #e1f5ee;
+  --on-brand: #ffffff;
+  --warning: #854f0b;
+  --warning-soft: #faeeda;
+  --danger: #b42318;
+  --baseline: #888780;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #141413;
+    --foreground: #ededea;
+    --muted: #a3a29c;
+    --border: #3a3a37;
+    --surface: #1f1f1d;
+    --brand: #1d9e75;
+    --brand-strong: #5dcaa5;
+    --brand-soft: #0d3328;
+    --on-brand: #ffffff;
+    --warning: #f0b45c;
+    --warning-soft: #3d2606;
+    --danger: #f28b82;
+    --baseline: #888780;
+  }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-surface: var(--surface);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-soft: var(--brand-soft);
+  --color-on-brand: var(--on-brand);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-baseline: var(--baseline);
+  --font-sans:
+    var(--font-geist-sans), "Hiragino Sans", "Noto Sans JP", sans-serif;
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
 }

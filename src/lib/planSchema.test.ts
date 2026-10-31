@@ -55,7 +55,7 @@ describe("planInputSchema", () => {
     });
 
     it("長すぎると理由を出す", () => {
-      expect(errorsOf({ ...valid, materialName: "あ".repeat(51) })).toEqual({
+      expect(errorsOf({ ...valid, materialName: "あ".repeat(101) })).toEqual({
         materialName: MESSAGES.nameTooLong,
       });
     });
