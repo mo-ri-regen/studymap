@@ -4,7 +4,7 @@ import { planByPace } from "./plan";
 import { countStudyDays } from "./studyDays";
 
 export const LIMITS = {
-  nameLength: 50,
+  nameLength: 100,
   totalProblems: 10000,
   rounds: 20,
   perDay: 1000,
