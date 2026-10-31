@@ -42,3 +42,8 @@ next-env.d.ts
 
 # claude code (local preview settings)
 /.claude/
+
+# playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
