@@ -8,6 +8,7 @@
 
 - [要件定義書](docs/requirements.md)
 - [開発の手順](docs/roadmap.md)
+- [画面設計](docs/design.md)
 
 ## 手元で動かす
 
