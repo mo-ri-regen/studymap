@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { ClearButton, ImportButton } from "@/components/DataActions";
 import { Notice, Screen } from "@/components/ui";
 import type { AppData } from "@/lib/appData";
 import { STORAGE_MESSAGES, useAppData } from "@/state/appStore";
@@ -16,13 +17,21 @@ export function DataGate({
   if (loaded === null) return <Screen>{null}</Screen>;
 
   if (!loaded.ok) {
+    if (loaded.error === "unavailable") {
+      return (
+        <Screen>
+          <Notice tone="danger">{STORAGE_MESSAGES.unavailable}</Notice>
+        </Screen>
+      );
+    }
+    // 壊れたデータは自動で消さず、読み込み直すか消すかを選んでもらう
     return (
       <Screen>
-        <Notice tone="danger">
-          {loaded.error === "unavailable"
-            ? STORAGE_MESSAGES.unavailable
-            : STORAGE_MESSAGES.broken}
-        </Notice>
+        <div className="flex flex-col gap-3">
+          <Notice tone="danger">{STORAGE_MESSAGES.broken}</Notice>
+          <ImportButton />
+          <ClearButton />
+        </div>
       </Screen>
     );
   }

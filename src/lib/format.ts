@@ -12,6 +12,12 @@ export function formatMonthDay(date: IsoDate): string {
   return `${month}/${day}（${weekdayLabel(getWeekday(date))}）`;
 }
 
+/** 例: 2026-11-02 → 11/2 */
+export function formatShortDate(date: IsoDate): string {
+  const [, month, day] = date.split("-").map(Number);
+  return `${month}/${day}`;
+}
+
 /** 例: 2026-11-02 → 2026/11/2（月） */
 export function formatDate(date: IsoDate): string {
   return `${date.slice(0, 4)}/${formatMonthDay(date)}`;

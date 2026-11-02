@@ -9,8 +9,6 @@ import {
   type UseFormReturn,
 } from "react-hook-form";
 import { Field, Notice, buttonStyles, inputStyles } from "@/components/ui";
-import { CURRENT_VERSION } from "@/lib/appData";
-import type { IsoDate } from "@/lib/date";
 import {
   formatCount,
   formatDate,
@@ -21,7 +19,6 @@ import {
   STEP_FIELDS,
   WEEKDAY_ORDER,
   calculatePlan,
-  defaultFormValues,
   validatePlanForm,
   type CalculatedPlan,
   type PlanFormField,
@@ -32,7 +29,7 @@ import {
   OTHER_QUALIFICATION,
   QUALIFICATION_GROUPS,
 } from "@/lib/qualifications";
-import { STORAGE_MESSAGES, saveAppData } from "@/state/appStore";
+import { STORAGE_MESSAGES } from "@/state/appStore";
 
 const STEPS = ["教材", "日程", "計算結果"] as const;
 
@@ -49,12 +46,24 @@ const resolver: Resolver<PlanFormValues> = (values) => {
 
 type Form = UseFormReturn<PlanFormValues>;
 
-export function PlanForm({ today }: { today: IsoDate }) {
+/** 計画の作成と「計画を変える」で使う3ステップの入力 */
+export function PlanForm({
+  title,
+  defaultValues,
+  submitLabel,
+  onSubmit,
+}: {
+  title: string;
+  defaultValues: PlanFormValues;
+  submitLabel: string;
+  /** 計画を保存する。保存できたら true */
+  onSubmit: (plan: PlanInput) => boolean;
+}) {
   const router = useRouter();
   const form = useForm<PlanFormValues>({
     // 欄を離れたときに確かめ、一度間違いが出たら直した時点で消す
     mode: "onTouched",
-    defaultValues: defaultFormValues(today),
+    defaultValues,
     resolver,
   });
   const [step, setStep] = useState(0);
@@ -88,18 +97,13 @@ export function PlanForm({ today }: { today: IsoDate }) {
 
   const start = () => {
     if (!result) return;
-    const saved = saveAppData({
-      version: CURRENT_VERSION,
-      plan: result.plan,
-      records: [],
-    });
-    if (saved.ok) router.push("/");
+    if (onSubmit(result.plan)) router.push("/");
     else setSaveFailed(true);
   };
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-xl font-bold">計画を作る</h1>
+      <h1 className="text-xl font-bold">{title}</h1>
       <StepBar current={step} />
       <form
         noValidate
@@ -123,7 +127,19 @@ export function PlanForm({ today }: { today: IsoDate }) {
         )}
 
         <div className="flex gap-3">
-          {step > 0 && (
+          {step === 0 ? (
+            <button
+              type="button"
+              className={buttonStyles.secondary}
+              // 保存せずに、前の画面（設定や初めて開いたときの画面）に戻る
+              onClick={() =>
+                // 直接開いたときは戻る先がないので、ホームへ
+                window.history.length > 1 ? router.back() : router.push("/")
+              }
+            >
+              やめる
+            </button>
+          ) : (
             <button
               type="button"
               className={buttonStyles.secondary}
@@ -156,7 +172,7 @@ export function PlanForm({ today }: { today: IsoDate }) {
               className={buttonStyles.primary}
               onClick={start}
             >
-              この計画で始める
+              {submitLabel}
             </button>
           )}
         </div>

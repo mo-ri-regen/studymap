@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const TABS = [
   { href: "/", label: "ホーム" },
   { href: "/record", label: "記録" },
+  { href: "/settings", label: "設定" },
 ] as const;
 
 /** 画面の下のタブ。計画があるときだけ出す */
@@ -16,7 +17,7 @@ export function TabBar() {
       aria-label="画面の切り替え"
       className="fixed inset-x-0 bottom-0 border-t border-border bg-background pb-[env(safe-area-inset-bottom)]"
     >
-      <ul className="mx-auto grid max-w-md grid-cols-2">
+      <ul className="mx-auto grid max-w-md grid-cols-3">
         {TABS.map((tab) => {
           const active = pathname === tab.href;
           return (

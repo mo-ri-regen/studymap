@@ -3,6 +3,7 @@ import {
   formatCount,
   formatDate,
   formatMonthDay,
+  formatShortDate,
   weekdayLabel,
 } from "./format";
 
@@ -14,6 +15,10 @@ describe("format", () => {
 
   it("月日と曜日を出す", () => {
     expect(formatMonthDay("2026-11-02")).toBe("11/2（月）");
+  });
+
+  it("月日だけを出す", () => {
+    expect(formatShortDate("2026-11-02")).toBe("11/2");
   });
 
   it("年も付けて出す", () => {
