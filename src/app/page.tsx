@@ -1,10 +1,10 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { CountButtons } from "@/components/CountButtons";
 import { ExportButton, NewPlanButton } from "@/components/DataActions";
-import { ProgressChart } from "@/components/ProgressChart";
 import { DataGate } from "@/components/DataGate";
 import { TabBar } from "@/components/TabBar";
 import { Notice, Screen, buttonStyles } from "@/components/ui";
@@ -22,6 +22,12 @@ import {
 import { addSolved } from "@/lib/records";
 import { createSampleData } from "@/lib/sampleData";
 import { STORAGE_MESSAGES, saveAppData, saveRecords } from "@/state/appStore";
+
+// グラフの部品は大きいので、初めて開いたときの画面では読み込まない
+const ProgressChart = dynamic(
+  () => import("@/components/ProgressChart").then((m) => m.ProgressChart),
+  { ssr: false, loading: () => <div className="h-60" /> },
+);
 
 export default function HomePage() {
   return (

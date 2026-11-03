@@ -22,7 +22,7 @@ const buttonBase =
   "inline-flex min-h-12 w-full items-center justify-center rounded-lg px-4 text-base font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:opacity-50";
 
 export const buttonStyles = {
-  primary: `${buttonBase} bg-brand text-on-brand hover:bg-brand-strong`,
+  primary: `${buttonBase} bg-button text-on-brand hover:bg-button-hover`,
   secondary: `${buttonBase} border border-border text-foreground hover:bg-surface`,
   danger: `${buttonBase} bg-danger text-on-brand hover:opacity-90`,
   dangerText: `${buttonBase} border border-border text-danger hover:bg-surface`,

@@ -44,3 +44,23 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+  lighthouse:
+    name: 表示の速さと使いやすさ（Lighthouse）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # スマホの設定で3回ずつ測り、真ん中の点数が90点未満なら失敗にする（設定は lighthouserc.json）
+      - run: npx @lhci/cli@0.15.1 autorun
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-report
+          path: lighthouse-report/
+          retention-days: 7
