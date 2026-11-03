@@ -12,6 +12,9 @@
   --brand-strong: #0f6e56;
   --brand-soft: #e1f5ee;
   --on-brand: #ffffff;
+  /* 白い文字をのせるボタンの色（文字が読みやすいよう濃い緑） */
+  --button: #0f6e56;
+  --button-hover: #0a5745;
   --warning: #854f0b;
   --warning-soft: #faeeda;
   --danger: #b42318;
@@ -46,6 +49,8 @@
   --color-brand-strong: var(--brand-strong);
   --color-brand-soft: var(--brand-soft);
   --color-on-brand: var(--on-brand);
+  --color-button: var(--button);
+  --color-button-hover: var(--button-hover);
   --color-warning: var(--warning);
   --color-warning-soft: var(--warning-soft);
   --color-danger: var(--danger);

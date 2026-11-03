@@ -396,7 +396,7 @@ function ScheduleStep({
           {WEEKDAY_ORDER.map((weekday) => (
             <label
               key={weekday}
-              className={`flex min-h-11 cursor-pointer items-center justify-center rounded-lg border text-base has-checked:border-brand has-checked:bg-brand has-checked:font-semibold has-checked:text-on-brand has-focus-visible:outline-2 has-focus-visible:outline-brand ${weekdaysError ? "border-danger" : "border-border"}`}
+              className={`flex min-h-11 cursor-pointer items-center justify-center rounded-lg border text-base has-checked:border-button has-checked:bg-button has-checked:font-semibold has-checked:text-on-brand has-focus-visible:outline-2 has-focus-visible:outline-brand ${weekdaysError ? "border-danger" : "border-border"}`}
             >
               <input
                 type="checkbox"

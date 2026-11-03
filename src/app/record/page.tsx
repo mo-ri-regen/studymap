@@ -201,7 +201,7 @@ function TotalForm({
           />
           <button
             type="submit"
-            className="shrink-0 rounded-lg bg-brand px-5 font-semibold text-on-brand hover:bg-brand-strong"
+            className="shrink-0 rounded-lg bg-button px-5 font-semibold text-on-brand hover:bg-button-hover"
           >
             保存
           </button>
