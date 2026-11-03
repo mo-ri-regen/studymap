@@ -1,15 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { CountButtons } from "@/components/CountButtons";
+import { ExportButton, NewPlanButton } from "@/components/DataActions";
+import { ProgressChart } from "@/components/ProgressChart";
 import { DataGate } from "@/components/DataGate";
 import { TabBar } from "@/components/TabBar";
 import { Notice, Screen, buttonStyles } from "@/components/ui";
 import type { AppData } from "@/lib/appData";
-import { getToday } from "@/lib/date";
-import { formatCount, formatMonthDay } from "@/lib/format";
-import { getProgress, type KeyDate } from "@/lib/progress";
+import { getToday, type IsoDate } from "@/lib/date";
+import { formatCount, formatMonthDay, formatShortDate } from "@/lib/format";
+import {
+  getChartPoints,
+  getProgress,
+  getSummary,
+  isFinished,
+  type KeyDate,
+  type Progress,
+} from "@/lib/progress";
 import { addSolved } from "@/lib/records";
 import { createSampleData } from "@/lib/sampleData";
 import { STORAGE_MESSAGES, saveAppData, saveRecords } from "@/state/appStore";
@@ -71,6 +80,9 @@ function Home({ data }: { data: AppData }) {
   const progress = getProgress(plan, data.records, today);
   // 保存されている計画は入力チェックを通っているので、ここでは必ず計算できる
   if (progress === null) return null;
+  if (isFinished(plan, progress, today)) {
+    return <Completion data={data} progress={progress} today={today} />;
+  }
 
   const add = (delta: number) => {
     const result = saveRecords(data, (records) =>
@@ -164,6 +176,11 @@ function Home({ data }: { data: AppData }) {
             )}
           </section>
 
+          <ProgressChart
+            points={getChartPoints(plan, data.records, progress, today)}
+            totalWork={progress.totalWork}
+          />
+
           <section aria-label="終わる見込み">
             {progress.isOverdue ? (
               <Notice tone="warning">
@@ -213,5 +230,87 @@ function KeyDateLine({ keyDate }: { keyDate: KeyDate }) {
         </span>
       )}
     </p>
+  );
+}
+
+/** 完了（全部解いたとき、または試験日を過ぎたとき） */
+function Completion({
+  data,
+  progress,
+  today,
+}: {
+  data: AppData;
+  progress: Progress;
+  today: IsoDate;
+}) {
+  const plan = data.plan!;
+  const summary = getSummary(data.records, progress);
+  const difference = {
+    early: (days: number) => `予定より${days}日早く終わりました`,
+    late: (days: number) => `予定より${days}日遅く終わりました`,
+  };
+
+  return (
+    <>
+      <Screen withTabs>
+        <div className="flex flex-col gap-6">
+          <header className="flex flex-col gap-1 text-center">
+            <h1 className="text-2xl font-bold text-brand-strong">
+              おつかれさまでした
+            </h1>
+            <p className="text-base">{plan.qualificationName}</p>
+          </header>
+
+          <dl className="grid grid-cols-2 gap-3">
+            <SummaryItem label="解いた問題">
+              {formatCount(summary.done)}問
+            </SummaryItem>
+            <SummaryItem label="勉強した日">
+              {formatCount(summary.studiedDays)}日
+            </SummaryItem>
+            <SummaryItem label="いちばん多く解いた日">
+              {summary.best
+                ? `${formatCount(summary.best.solved)}問（${formatShortDate(summary.best.date)}）`
+                : "—"}
+            </SummaryItem>
+            <SummaryItem label="予定との差">
+              {summary.difference.kind === "remaining"
+                ? `残り ${formatCount(summary.difference.count)}問`
+                : summary.difference.kind === "onTime"
+                  ? "予定どおり終わりました"
+                  : difference[summary.difference.kind](
+                      summary.difference.days,
+                    )}
+            </SummaryItem>
+          </dl>
+
+          <ProgressChart
+            points={getChartPoints(plan, data.records, progress, today)}
+            totalWork={progress.totalWork}
+          />
+
+          <div className="flex flex-col gap-3">
+            <NewPlanButton primary />
+            <ExportButton data={data} label="記録を書き出す" />
+          </div>
+        </div>
+      </Screen>
+      <TabBar />
+    </>
+  );
+}
+
+function SummaryItem({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-1 rounded-lg border border-border px-4 py-3">
+      <dt className="text-xs text-muted">{label}</dt>
+      <dd className="text-base font-semibold">{children}</dd>
+    </div>
   );
 }

@@ -65,3 +65,10 @@ export function saveRecords(
 ): SaveResult {
   return saveAppData({ ...data, records: update(data.records) });
 }
+
+/** 計画と記録をすべて消す */
+export function clearAppData(): void {
+  store.clear();
+  snapshot = store.load();
+  listeners.forEach((listener) => listener());
+}

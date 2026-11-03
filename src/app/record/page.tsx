@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
+import { BackToHome } from "@/components/BackToHome";
 import { CountButtons } from "@/components/CountButtons";
 import { DataGate } from "@/components/DataGate";
 import { TabBar } from "@/components/TabBar";
@@ -29,13 +29,6 @@ export default function RecordPage() {
       {(data) => (data.plan === null ? <BackToHome /> : <Record data={data} />)}
     </DataGate>
   );
-}
-
-/** 計画がないときは、初めて開いたときの画面へ */
-function BackToHome() {
-  const router = useRouter();
-  useEffect(() => router.replace("/"), [router]);
-  return null;
 }
 
 function Record({ data }: { data: AppData }) {

@@ -42,3 +42,18 @@ test("計画がないときに記録画面を開くと、最初の画面に戻�
   await expect(page).toHaveURL("/");
   await expect(page.getByRole("link", { name: "計画を作る" })).toBeVisible();
 });
+
+test("保存されたデータが壊れていても、消して最初からやり直せる", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    if (!sessionStorage.getItem("seeded")) {
+      sessionStorage.setItem("seeded", "1");
+      window.localStorage.setItem("studymap:data", "{壊れたデータ");
+    }
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "すべてのデータを消す" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "消す" }).click();
+  await expect(page.getByRole("link", { name: "計画を作る" })).toBeVisible();
+});

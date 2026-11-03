@@ -1,22 +1,29 @@
 "use client";
 
+import { DataGate } from "@/components/DataGate";
 import { PlanForm } from "@/components/PlanForm";
-import { Notice, Screen } from "@/components/ui";
+import { Screen } from "@/components/ui";
+import { CURRENT_VERSION } from "@/lib/appData";
 import { getToday } from "@/lib/date";
-import { STORAGE_MESSAGES, useAppData } from "@/state/appStore";
+import { defaultFormValues } from "@/lib/planForm";
+import { saveAppData } from "@/state/appStore";
 
 export default function NewPlanPage() {
-  const loaded = useAppData();
-  // 今日の日付はブラウザで決めるので、読み込むまでは何も出さない
-  if (loaded === null) return <Screen>{null}</Screen>;
-
   return (
-    <Screen>
-      {loaded.ok || loaded.error !== "unavailable" ? (
-        <PlanForm today={getToday()} />
-      ) : (
-        <Notice tone="danger">{STORAGE_MESSAGES.unavailable}</Notice>
+    <DataGate>
+      {() => (
+        <Screen>
+          <PlanForm
+            title="計画を作る"
+            defaultValues={defaultFormValues(getToday())}
+            submitLabel="この計画で始める"
+            // 今の計画と記録は、ここで保存したときに置き換わる
+            onSubmit={(plan) =>
+              saveAppData({ version: CURRENT_VERSION, plan, records: [] }).ok
+            }
+          />
+        </Screen>
       )}
-    </Screen>
+    </DataGate>
   );
 }

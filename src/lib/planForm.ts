@@ -6,7 +6,7 @@ import {
   type PacePlanResult,
 } from "./plan";
 import { planInputSchema, type PlanInput } from "./planSchema";
-import { OTHER_QUALIFICATION } from "./qualifications";
+import { OTHER_QUALIFICATION, QUALIFICATION_GROUPS } from "./qualifications";
 
 /**
  * 作成画面の入力欄の値。入力欄はすべて文字で持ち、確かめるときに数や曜日に直す。
@@ -68,6 +68,27 @@ export function defaultFormValues(today: IsoDate): PlanFormValues {
     studyWeekdays: WEEKDAY_ORDER.map(String),
     bufferDays: "0",
     dailyLimit: "50",
+  };
+}
+
+/** 保存されている計画を、入力欄の値に戻す（「計画を変える」で使う） */
+export function toFormValues(plan: PlanInput): PlanFormValues {
+  const inList = QUALIFICATION_GROUPS.some((group) =>
+    (group.items as readonly string[]).includes(plan.qualificationName),
+  );
+  return {
+    qualificationChoice: inList ? plan.qualificationName : OTHER_QUALIFICATION,
+    qualificationOther: inList ? "" : plan.qualificationName,
+    materialName: plan.materialName,
+    totalProblems: String(plan.totalProblems),
+    rounds: String(plan.rounds),
+    startDate: plan.startDate,
+    mode: plan.mode,
+    examDate: plan.examDate ?? "",
+    dailyPace: plan.dailyPace === undefined ? "" : String(plan.dailyPace),
+    studyWeekdays: plan.studyWeekdays.map(String),
+    bufferDays: String(plan.bufferDays),
+    dailyLimit: String(plan.dailyLimit),
   };
 }
 

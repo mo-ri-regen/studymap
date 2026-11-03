@@ -126,3 +126,130 @@ export function getHistory(
       };
     });
 }
+
+export type ChartPoint = {
+  date: IsoDate;
+  /** 最初の計画で、その日までに解いている予定の数 */
+  baseline: number;
+  /** その日までに解いた数（今日まで） */
+  actual?: number;
+  /** 今日から立て直した計画で、その日までに解いている予定の数 */
+  forecast?: number;
+};
+
+/**
+ * 進捗グラフの点。横は開始日から「計画の最後の日」と「最後に記録した日」の遅いほうまで。
+ * これからの計画は、全部解いておらず期限切れでもなく、今日が範囲の中にあるときだけ出す。
+ */
+export function getChartPoints(
+  plan: PlanInput,
+  records: readonly StudyRecord[],
+  progress: Progress,
+  today: IsoDate,
+): ChartPoint[] {
+  const pastRecords = records.filter((r) => r.date <= today);
+  const firstDate = [
+    plan.startDate,
+    ...pastRecords.map((r) => r.date),
+  ].sort()[0];
+  const lastDate = [
+    progress.baseline.at(-1)?.date ?? plan.startDate,
+    ...pastRecords.map((r) => r.date),
+  ]
+    .sort()
+    .at(-1)!;
+
+  const baselineByDate = new Map(
+    progress.baseline.map((d) => [d.date, d.target]),
+  );
+  const solvedByDate = new Map(pastRecords.map((r) => [r.date, r.solved]));
+  const forecastByDate = new Map(
+    progress.futureTargets.map((d) => [d.date, d.cumulative]),
+  );
+  // 期限切れのときは、これからの計画がないので出さない
+  const showForecast =
+    !progress.isCompleted &&
+    !progress.isOverdue &&
+    today >= firstDate &&
+    today <= lastDate;
+  // 今日の点は「今日の目標を達成した」とした数から始める
+  const todayForecast =
+    progress.done -
+    progress.solvedToday +
+    Math.max(progress.todayTarget, progress.solvedToday);
+
+  let baseline = 0;
+  let actual = 0;
+  let forecast = todayForecast;
+  return eachDay(firstDate, lastDate).map((date) => {
+    baseline += baselineByDate.get(date) ?? 0;
+    actual += solvedByDate.get(date) ?? 0;
+    const point: ChartPoint = { date, baseline };
+    if (date <= today) point.actual = actual;
+    if (showForecast && date >= today) {
+      forecast = forecastByDate.get(date) ?? forecast;
+      point.forecast = Math.min(forecast, progress.totalWork);
+    }
+    return point;
+  });
+}
+
+/** 完了画面を出すか。全部解いたとき、または「試験日から」の計画で試験日を過ぎたとき */
+export function isFinished(
+  plan: PlanInput,
+  progress: Progress,
+  today: IsoDate,
+): boolean {
+  return (
+    progress.isCompleted ||
+    (plan.mode === "examDate" &&
+      plan.examDate !== undefined &&
+      today > plan.examDate)
+  );
+}
+
+export type Summary = {
+  done: number;
+  /** 1問以上解いた日の数 */
+  studiedDays: number;
+  best: StudyRecord | null;
+  difference:
+    | { kind: "early" | "late"; days: number }
+    | { kind: "onTime" }
+    | { kind: "remaining"; count: number };
+};
+
+/** 完了画面の振り返りの数字 */
+export function getSummary(
+  records: readonly StudyRecord[],
+  progress: Progress,
+): Summary {
+  const solvedRecords = records.filter((r) => r.solved > 0);
+  const best = solvedRecords.reduce<StudyRecord | null>(
+    (top, r) => (top === null || r.solved > top.solved ? r : top),
+    null,
+  );
+
+  let difference: Summary["difference"] = {
+    kind: "remaining",
+    count: progress.remaining,
+  };
+  const lastSolved = solvedRecords.at(-1)?.date;
+  const plannedFinish = progress.baseline.findLast((d) => d.target > 0)?.date;
+  if (progress.isCompleted && lastSolved && plannedFinish) {
+    const days = diffDays(lastSolved, plannedFinish);
+    difference =
+      days > 0
+        ? { kind: "early", days }
+        : days < 0
+          ? { kind: "late", days: -days }
+          : { kind: "onTime" };
+  }
+
+  return {
+    done: progress.done,
+    studiedDays: solvedRecords.length,
+    best,
+    difference,
+  };
+}

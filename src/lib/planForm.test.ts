@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   calculatePlan,
   defaultFormValues,
+  toFormValues,
   validatePlanForm,
   type PlanFormValues,
 } from "./planForm";
@@ -149,6 +150,32 @@ describe("calculatePlan", () => {
       ok: true,
       finishDate: "2026-11-08",
       recommendedExamDate: "2026-11-09",
+    });
+  });
+});
+
+describe("toFormValues", () => {
+  it("保存した計画を入力欄に戻すと、同じ計画になる", () => {
+    const result = validatePlanForm(filled);
+    if (!result.ok) throw new Error("expected ok");
+    const back = validatePlanForm(toFormValues(result.plan));
+    expect(back).toEqual(result);
+  });
+
+  it("一覧にない資格名は「その他」に入れる", () => {
+    const result = validatePlanForm({
+      ...filled,
+      qualificationChoice: OTHER_QUALIFICATION,
+      qualificationOther: "簿記2級",
+      mode: "pace",
+      dailyPace: "30",
+    });
+    if (!result.ok) throw new Error("expected ok");
+    expect(toFormValues(result.plan)).toMatchObject({
+      qualificationChoice: OTHER_QUALIFICATION,
+      qualificationOther: "簿記2級",
+      examDate: "",
+      dailyPace: "30",
     });
   });
 });

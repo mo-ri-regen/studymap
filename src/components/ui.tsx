@@ -24,6 +24,8 @@ const buttonBase =
 export const buttonStyles = {
   primary: `${buttonBase} bg-brand text-on-brand hover:bg-brand-strong`,
   secondary: `${buttonBase} border border-border text-foreground hover:bg-surface`,
+  danger: `${buttonBase} bg-danger text-on-brand hover:opacity-90`,
+  dangerText: `${buttonBase} border border-border text-danger hover:bg-surface`,
 } as const;
 
 export const inputStyles = (hasError: boolean) =>
